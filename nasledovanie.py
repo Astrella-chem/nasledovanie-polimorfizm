@@ -1,11 +1,3 @@
-def average(grades): #среднее
-    summa = 0
-    sbj_amount = 0
-    for sbj in grades:
-        summa += sum(grades[sbj])
-        sbj_amount += len(grades[sbj])
-
-    return summa / sbj_amount
 
 class Student:
     def __init__(self, name, surname, gender):
@@ -15,12 +7,34 @@ class Student:
         self.finished_courses = []            #завершенные курсы
         self.courses_in_progress = []         # курсы в процессе изучения
         self.grades = {}    #оценки #словарь
-        self.average = 0
+        self.average = float()
+
+    def rate_lecturer(self, lecturer, sbj, rate): # студент выставляет оценку лектору
+        if isinstance(lecturer, Lecturer) and sbj in self.courses_in_progress  and sbj in lecturer.courses_attached:
+            if sbj in lecturer.rating:
+                lecturer.rating[sbj] += [rate]
+            else:
+                lecturer.rating[sbj] = [rate]
+        else:
+            return 'Ошибка'
+
+    def average(self):  # среднее
+        summa = 0
+        sbj_amount = 0
+        if not self.grades:
+            return 0
+        for sbj in self.grades:
+            summa += sum(self.grades[sbj])
+            sbj_amount += len(self.grades[sbj])
+
+        return float(summa / sbj_amount)
+
+    def __lt__(self, other_student):
+        if not isinstance(other_student, Student):
+            print('Не студент')
+        return self.average < other_student.average
 
 
-    def rate_lecturer(self, lecturer, rate, sbj):
-        if sbj in self.courses_in_progress and sbj in lecturer.rating and sbj in lecturer.courses_attached:
-            lecturer.rating[sbj] += [rate]
 
     def __str__(self):
         return f'Имя: {self.name} \nФамилия: {self.surname}\nСредняя оценка за домашние задания: {self.average}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)} \n'
@@ -36,15 +50,25 @@ class Lecturer(Mentor):
     def __init__(self, firstName, lastName,grade):
         super().__init__(firstName, lastName)
         self.grade = grade
-        self.rating = {
-            'Введение в программирование': [10, 10, 10, 10, 10],
-            'Git': [10, 10, 10, 10, 10],
-            'Python': [10, 10]
-        }  # оценки #словарь
+        self.rating = {}  # оценки #словарь
 
+    def average(self):
+        rating = 0
+        lecture_sum = 0
+        if not self.rating:
+            return 0
+        for lect in self.rating:
+                lecture_sum += sum(self.rating[lect])
+                rating += len(self.rating[lect])
+        return float(lecture_sum / rating)
+
+    def __lt__(self, other_lecturer):
+        if not isinstance(other_lecturer, Student):
+            print('Не лектор')
+        return self.average < other_lecturer.average
 
     def __str__(self):
-        return f'Имя: {self.firstName} \nФамилия: {self.lastName} \nСредняя оценка за лекции:  {self.grade} \n'
+        return f'Имя: {self.firstName} \nФамилия: {self.lastName} \nСредняя оценка за лекции:  {self.average} \n'
 
 
 class Reviewer(Mentor):
@@ -76,7 +100,7 @@ some_student.grades['Python'] = [10, 10]
 print(some_student.__str__())
 
 some_lecturer = Lecturer('Some', 'Buddy', 9)
-
+some_lecturer.courses_attached += ['Python']
 print(some_lecturer.__str__())
 
 some_reviewer = Reviewer('Some', 'Buddy')
