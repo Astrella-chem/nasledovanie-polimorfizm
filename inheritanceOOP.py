@@ -7,7 +7,6 @@ class Student:
         self.finished_courses = []            #завершенные курсы
         self.courses_in_progress = []         # курсы в процессе изучения
         self.grades = {}    #оценки #словарь
-        self.average = float()
 
     # студент выставляет оценку лектору
     def rate_lecturer(self, lecturer, sbj, rate):
@@ -19,18 +18,10 @@ class Student:
         else:
             return 'Ошибка'
 
-    def average(self):  # среднее
-        summa = 0
-        sbj_amount = 0
-        if not self.grades:
-            return 0
-        for sbj in self.grades:
-            summa += sum(self.grades[sbj])
-            sbj_amount += len(self.grades[sbj])
-        if  sbj_amount == 0:
-            return 0
-        else:
-            return summa / sbj_amount
+    @property
+    def grade_avg(self):
+        grades = [grade for grades in self.grades.values() for grade in grades]
+        return sum(grades) / len(grades) if grades else 0
 
     def __lt__(self, other_student): #операторы сравнения
         if not isinstance(other_student, Student):
@@ -63,7 +54,7 @@ class Student:
         return self.average >= other_student.average
 
     def __str__(self):
-        return f'Имя: {self.name} \nФамилия: {self.surname}\nСредняя оценка за домашние задания: {some_student.average}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)} \n'
+        return f'Имя: {self.name} \nФамилия: {self.surname}\nСредняя оценка за домашние задания: {self.grade_avg}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)} \n'
 
 class Mentor:
     def __init__(self, firstName, lastName):
@@ -120,7 +111,7 @@ class Lecturer(Mentor):
         return self.average >= other_lecturer.average
 
     def __str__(self):
-        return f'Имя: {self.firstName} \nФамилия: {self.lastName} \n'
+        return f'Имя: {self.firstName} \nФамилия: {self.lastName} \nСредняя оценка за лекции: {some_lecturer.average()} \n'
 
 
 class Reviewer(Mentor):
@@ -141,13 +132,13 @@ class Reviewer(Mentor):
         return f'Имя: {self.firstName}\nФамилия: {self.lastName} \n'
 
 
-some_student = Student('Ruoy', 'Eman', 'your_gender')
+some_student = Student('Some', 'Buddy', "your_gender" )
 some_student.courses_in_progress += ['Введение в программирование']
 some_student.courses_in_progress += ['Git']
 some_student.courses_in_progress += ['Python']
-some_student.grades['Введение в программирование'] = [10, 10, 10, 10, 10]
-some_student.grades['Git'] = [10, 10, 10, 10, 10]
-some_student.grades['Python'] = [10, 10]
+some_student.grades['Введение в программирование'] = [10, 10, 9, 7, 10]
+some_student.grades['Git'] = [5, 7, 4, 9, 10]
+some_student.grades['Python'] = [4, 9]
 print(some_student.__str__())
 
 
@@ -162,7 +153,6 @@ some_student.rate_lecturer(some_lecturer, "Python", 5)
 some_student.rate_lecturer(some_lecturer, "Python", 5)
 some_student.rate_lecturer(some_lecturer, "Введение в программирование", 5)
 print(some_lecturer.__str__())
-print(f'Средняя оценка за лекции: {some_lecturer.average()}')
 
 some_reviewer = Reviewer('Some', 'Buddy')
 some_reviewer.courses_checked += ['Python']
