@@ -26,32 +26,32 @@ class Student:
     def __lt__(self, other_student): #операторы сравнения
         if not isinstance(other_student, Student):
             print('Не студент')
-        return self.average < other_student.average
+        return self.grade_avg < other_student.grade_avg
 
     def __eq__(self, other_student):
         if not isinstance(other_student, Student):
             print('Не студент')
-        return self.average == other_student.average
+        return self.grade_avg == other_student.grade_avg
 
     def __ne__(self, other_student):
         if not isinstance(other_student, Student):
             print('Не студент')
-        return self.average != other_student.average
+        return self.grade_avg != other_student.grade_avg
 
     def __le__(self, other_student):
         if not isinstance(other_student, Student):
             print('Не студент')
-        return self.average <= other_student.average
+        return self.grade_avg <= other_student.grade_avg
 
     def __gt__(self, other_student):
         if not isinstance(other_student, Student):
             print('Не студент')
-        return self.average > other_student.average
+        return self.grade_avg > other_student.grade_avg
 
     def __ge__(self, other_student):
         if not isinstance(other_student, Student):
             print('Не студент')
-        return self.average >= other_student.average
+        return self.grade_avg >= other_student.grade_avg
 
     def __str__(self):
         return f'Имя: {self.name} \nФамилия: {self.surname}\nСредняя оценка за домашние задания: {self.grade_avg}\nКурсы в процессе изучения: {", ".join(self.courses_in_progress)}\nЗавершенные курсы: {", ".join(self.finished_courses)} \n'
@@ -81,34 +81,34 @@ class Lecturer(Mentor):
             return lecture_sum / rating
 
     def __eq__(self, other_lecturer):
-        if not isinstance(other_lecturer, Student):
+        if not isinstance(other_lecturer, Lecturer):
             print('Не лектор')
-        return self.average == other_lecturer.average
+        return self.average() == other_lecturer.average()
 
     def __ne__(self, other_lecturer):
-        if not isinstance(other_lecturer, Student):
+        if not isinstance(other_lecturer, Lecturer):
             print('Не лектор')
-        return self.average != other_lecturer.average
+        return self.average() != other_lecturer.average()
 
     def __lt__(self, other_lecturer):
-        if not isinstance(other_lecturer, Student):
+        if not isinstance(other_lecturer, Lecturer):
             print('Не лектор')
-        return self.average < other_lecturer.average
+        return self.average() < other_lecturer.average()
 
     def __le__(self, other_lecturer):
-        if not isinstance(other_lecturer, Student):
+        if not isinstance(other_lecturer, Lecturer):
             print('Не лектор')
-        return self.average <= other_lecturer.average
+        return self.average() <= other_lecturer.average()
 
     def __gt__(self, other_lecturer):
-        if not isinstance(other_lecturer, Student):
+        if not isinstance(other_lecturer, Lecturer):
             print('Не лектор')
-        return self.average > other_lecturer.average
+        return self.average() > other_lecturer.average()
 
     def __ge__(self, other_lecturer):
-        if not isinstance(other_lecturer, Student):
+        if not isinstance(other_lecturer, Lecturer):
             print('Не лектор')
-        return self.average >= other_lecturer.average
+        return self.average() >= other_lecturer.average()
 
     def __str__(self):
         return f'Имя: {self.firstName} \nФамилия: {self.lastName} \nСредняя оценка за лекции: {some_lecturer.average()} \n'
@@ -162,3 +162,72 @@ some_reviewer.rate_hw(some_student, 'Python', 9)
 some_reviewer.rate_hw(some_student, 'Введение в программирование', 5)
 some_reviewer.rate_hw(some_student, 'Git', 5)
 print(some_reviewer.__str__())
+
+#4
+student_1 = Student('Вовочка', 'Петров', 'мужской')
+student_1.courses_in_progress += ['Python']
+student_1.finished_courses += ['Design']
+
+student_2 = Student('Светочка', 'Козлова', 'женский')
+student_2.courses_in_progress += ['Design']
+student_2.finished_courses += ['Python']
+
+lecturer_1 = Lecturer('Никола', 'Тесла')
+lecturer_2 = Lecturer('Мария', 'Кюри')
+lecturer_1.courses_attached += ['Python']
+lecturer_2.courses_attached += ['Design']
+
+student_1.rate_lecturer(lecturer_1, 'Python', 9)
+student_2.rate_lecturer(lecturer_2, 'Design', 8)
+
+reviewer_1 = Reviewer('Дмитрий', 'Менделеев')
+reviewer_2 = Reviewer('Альберт', 'Эйнштейн')
+reviewer_1.courses_attached += ['Python']
+reviewer_2.courses_attached += ['Design']
+
+reviewer_1.rate_hw(student_1, 'Python', 6)
+reviewer_2.rate_hw(student_2, 'Design', 7)
+
+print(student_1)
+print(student_2)
+
+print(reviewer_1)
+print(reviewer_2)
+
+print(lecturer_1)
+print(lecturer_2)
+
+print("___\n")#среднее
+print(f'Средняя оценка студентов: {(student_1.grade_avg + student_2.grade_avg) / 2}')
+print(f'Средняя оценка лекторов: {(lecturer_1.average() + lecturer_2.average()) / 2}')
+
+print("___\n")#сравнение
+print(student_2.__lt__(student_1))
+print(lecturer_2.__lt__(lecturer_1))
+
+print("___\n")#средняя оценка
+stud_list = [student_1, student_2]
+
+def medium_grade_student(stud_list, course):
+    sum_grade = 0
+    count_grade = 0
+    for student in stud_list:
+        if course in student.grades:
+            sum_grade += sum(student.grades[course])
+            count_grade += len(student.grades[course])
+    return sum_grade / count_grade
+
+print(medium_grade_student(stud_list, 'Python'))
+
+lect_list = [lecturer_1, lecturer_2]
+
+def medium_grade_lecturer(lect_list, course):
+    sum_grade = 0
+    count_grade = 0
+    for lecturer in lect_list:
+        if course in lecturer.rating:
+            sum_grade += sum(lecturer.rating[course])
+            count_grade += len(lecturer.rating[course])
+    return sum_grade / count_grade
+
+print(medium_grade_lecturer(lect_list, 'Design'))
